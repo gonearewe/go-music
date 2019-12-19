@@ -54,5 +54,7 @@ func TestScan(t *testing.T) {
 		if err != nil {
 			t.Errorf("scan library: %s", err.Error())
 		}
+
+		println(lib.String())
 	}
 }

@@ -1,10 +1,10 @@
 package library
 
 import (
-	"fmt"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -15,17 +15,20 @@ import (
 const LEAST_TRACK_FILE_SIZE = 1024 // least size(byte)
 var ValidTrackFileSuffixes = [2]string{".wav", ".flac"}
 
-type Track interface{}
+type Track interface {
+	Title() string
+}
 
 type WAVTrack struct {
 	baseFile file
+	title    string // for WAV track, title follows basefile's name
 	sum      string // sha256 sum of the track, serving as the unique id
 	// WAV format file doesn't necessarily contain tag information
 }
 
 type FLACTrack struct {
 	baseFile file
-	title    string // unlike filename, title are
+	title    string // unlike filename, title comes from encoded tag info
 	album    string
 	artist   string // or artist list
 	genre    string // or genre list
@@ -34,9 +37,9 @@ type FLACTrack struct {
 }
 
 type file struct {
-	addr string // complete address 
+	addr string // complete address
 	name string // file basename
-	size int64 // how many bytes the file is
+	size int64  // how many bytes the file is
 }
 
 func ParseTrack(path string, fi os.FileInfo) (Track, error) {
@@ -65,7 +68,7 @@ func ParseTrack(path string, fi os.FileInfo) (Track, error) {
 	artists, _ := metadata.Artist()
 	genres, _ := metadata.Genre()
 	year, _ := metadata.Year()
-	sum,_:=metadata.Sum()
+	sum, _ := metadata.Sum()
 
 	// TODO: only supports flac and wav for now
 	flactrack := FLACTrack{
@@ -79,12 +82,20 @@ func ParseTrack(path string, fi os.FileInfo) (Track, error) {
 		artist: strings.Join(artists, ", "), // multible artists are separated by ", "
 		genre:  strings.Join(genres, ", "),  // multible genres are separated by ", "
 		year:   string(year),
-		sum:sum,
+		sum:    sum,
 	}
 
 	// DEBUG
 	fmt.Println(flactrack)
 	return flactrack, nil
+}
+
+func (w WAVTrack) Title() string {
+	return w.title
+}
+
+func (f FLACTrack) Title() string {
+	return f.title
 }
 
 // sum returns the sha256 sum of a file.
@@ -113,7 +124,7 @@ func sum(fileaddr string) (string, error) {
 
 // isValidTrack tells if a file is a possible track by provided file info.
 func isValidTrack(fi os.FileInfo) bool {
-	if fi.IsDir() || fi.Size() < LEAST_TRACK_FILE_SIZE {
+	if fi.IsDir()|| fi.Size() < LEAST_TRACK_FILE_SIZE {
 		return false
 	}
 
