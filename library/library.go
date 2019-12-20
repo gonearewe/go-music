@@ -18,6 +18,10 @@ type Library struct {
 
 // NewLibrary initializes and returns a library with basic info and empty track list.
 func NewLibrary(name, path string) (*Library, error) {
+	if strings.Trim(name, " ")==""{
+		return nil,errors.New("name of spaces inacceptable")
+	}
+
 	path = filepath.Clean(path)
 	if _, err := os.Stat(path); err != nil {
 		return nil, err
@@ -30,11 +34,13 @@ func NewLibrary(name, path string) (*Library, error) {
 	}, nil
 }
 
+// Scan scans tracks for a initialized library(with a path referring to a music folder), 
+// scanning a empty library will results in a error.
 func (l *Library) Scan() error {
 	if files, err := ioutil.ReadDir(l.path); err != nil {
 		return err
 	} else {
-		l.tracks = make([]Track, len(files)) // it's better to allocte first
+		l.tracks = make([]Track, 0, len(files)) // it's better to allocte first
 	}
 
 	walk(l.path, &l.tracks)
@@ -58,19 +64,30 @@ func (l *Library) String() string {
 	return str + "tracks: \n" + strings.Join(tracksStr, "\n")
 }
 
+func (l *Library)NumTracks()int{
+	if l.name==""{
+		panic("uninitialized library")
+	}
+	return len(l.tracks)
+}
+
+// TODO: improve with goroutine supports.
+// walk searchs a folder and its sub-folder recursively for tracks.
 func walk(path string, tracks *[]Track) {
 	entries, ok := dirEntries(path)
 	if !ok {
 		return
 	}
 
-	for _,e:=range entries{
-		if e.IsDir(){
-			walk(filepath.Join(path,e.Name()), tracks)
+	for _, e := range entries {
+		subpath:=filepath.Join(path, e.Name())
+
+		if e.IsDir() {
+			walk(subpath, tracks)
 			return
 		}
 
-		if track, err := ParseTrack(path, e);err == nil {
+		if track, err := ParseTrack(subpath, e); err == nil {
 			*tracks = append(*tracks, track)
 		}
 	}
@@ -78,6 +95,8 @@ func walk(path string, tracks *[]Track) {
 	return
 }
 
+// dirEntries generates a slice of direct contents of given folder,
+// and if given path is not a folder, returns false.
 func dirEntries(path string) ([]os.FileInfo, bool) {
 	entries, err := ioutil.ReadDir(path)
 	if err != nil {

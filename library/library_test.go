@@ -19,31 +19,26 @@ func TestScan(t *testing.T) {
 	aValidPath := dir + "/../assets"
 	validPaths:=[]string{aValidPath,aValidPath+"/./"}
 
+	// initialize library with kinds of name 
 	for _, name := range names {
 		_, err := library.NewLibrary(name, aValidPath)
-		// if lib.name!=name{
-		// 	t.Fatalf("initialize library with name: want %s, get: %s", name,lib.name)
-		// }
 		if err != nil {
 			t.Errorf("initialize library with kinds of name and valid path: %s", err.Error())
 		}
 	}
 
+	// initialize library with invalid path
 	for _, invalidPath := range invalidPaths {
 		lib, err := library.NewLibrary("MyLibrary", invalidPath)
-		if err != nil {
-			println("initialize library with invalid path: successfully find error: %s: %s", err.Error(), invalidPath)
-		} else {
+		if err == nil{ // errors reports expected
 			err := lib.Scan()
 			if err == nil {
 				t.Errorf("initialize library with invalid path: expected error not found: %s", invalidPath)
-			} else {
-				println("initialize library with invalid path: successfully find error: %s: %s", err.Error(), invalidPath)
-			}
-
+			} 
 		}
 	}
 
+	// scan library, pass expected
 	for _,validPath:=range validPaths{
 		lib, err := library.NewLibrary("MyLibrary", validPath)
 		if err != nil {
@@ -54,7 +49,5 @@ func TestScan(t *testing.T) {
 		if err != nil {
 			t.Errorf("scan library: %s", err.Error())
 		}
-
-		println(lib.String())
 	}
 }

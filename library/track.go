@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -42,6 +41,7 @@ type file struct {
 	size int64  // how many bytes the file is
 }
 
+// ParseTrack trys to parse a file whose path and FileInfo is given as a track.
 func ParseTrack(path string, fi os.FileInfo) (Track, error) {
 	if !isValidTrack(fi) {
 		return nil, errors.New("invalid track file")
@@ -86,14 +86,16 @@ func ParseTrack(path string, fi os.FileInfo) (Track, error) {
 	}
 
 	// DEBUG
-	fmt.Println(flactrack)
+	//fmt.Println(flactrack)
 	return flactrack, nil
 }
 
+// Title returns the title of a track.
 func (w WAVTrack) Title() string {
 	return w.title
 }
 
+// Title returns the title of a track.
 func (f FLACTrack) Title() string {
 	return f.title
 }
@@ -124,7 +126,7 @@ func sum(fileaddr string) (string, error) {
 
 // isValidTrack tells if a file is a possible track by provided file info.
 func isValidTrack(fi os.FileInfo) bool {
-	if fi.IsDir()|| fi.Size() < LEAST_TRACK_FILE_SIZE {
+	if fi.IsDir() || fi.Size() < LEAST_TRACK_FILE_SIZE {
 		return false
 	}
 
