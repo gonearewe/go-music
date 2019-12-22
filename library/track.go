@@ -16,23 +16,7 @@ var ValidTrackFileSuffixes = [2]string{".wav", ".flac"}
 
 type Track interface {
 	Title() string
-}
-
-type WAVTrack struct {
-	baseFile file
-	title    string // for WAV track, title follows basefile's name
-	sum      string // sha256 sum of the track, serving as the unique id
-	// WAV format file doesn't necessarily contain tag information
-}
-
-type FLACTrack struct {
-	baseFile file
-	title    string // unlike filename, title comes from encoded tag info
-	album    string
-	artist   string // or artist list
-	genre    string // or genre list
-	year     string
-	sum      string // sha256 sum of the track, serving as the unique id
+	FileAddr() string
 }
 
 type file struct {
@@ -90,16 +74,6 @@ func ParseTrack(path string, fi os.FileInfo) (Track, error) {
 	return flactrack, nil
 }
 
-// Title returns the title of a track.
-func (w WAVTrack) Title() string {
-	return w.title
-}
-
-// Title returns the title of a track.
-func (f FLACTrack) Title() string {
-	return f.title
-}
-
 // sum returns the sha256 sum of a file.
 func sum(fileaddr string) (string, error) {
 	// Open the file.
@@ -134,15 +108,6 @@ func isValidTrack(fi os.FileInfo) bool {
 		if strings.HasSuffix(fi.Name(), suffix) {
 			return true
 		}
-	}
-
-	return false
-}
-
-// isWAVTrack checks the suffix of a filename and tells if it's a possible WAV file.
-func isWAVTrack(fi os.FileInfo) bool {
-	if strings.HasSuffix(fi.Name(), ".wav") {
-		return true
 	}
 
 	return false

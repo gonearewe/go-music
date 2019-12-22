@@ -18,8 +18,8 @@ type Library struct {
 
 // NewLibrary initializes and returns a library with basic info and empty track list.
 func NewLibrary(name, path string) (*Library, error) {
-	if strings.Trim(name, " ")==""{
-		return nil,errors.New("name of spaces inacceptable")
+	if strings.Trim(name, " ") == "" {
+		return nil, errors.New("name of spaces inacceptable")
 	}
 
 	path = filepath.Clean(path)
@@ -34,7 +34,7 @@ func NewLibrary(name, path string) (*Library, error) {
 	}, nil
 }
 
-// Scan scans tracks for a initialized library(with a path referring to a music folder), 
+// Scan scans tracks for a initialized library(with a path referring to a music folder),
 // scanning a empty library will results in a error.
 func (l *Library) Scan() error {
 	if files, err := ioutil.ReadDir(l.path); err != nil {
@@ -53,6 +53,14 @@ func (l *Library) Scan() error {
 	return nil
 }
 
+func (l *Library) GetTrackByID(id int) *Track {
+	if id > len(l.tracks)-1 {
+		panic("track id out of range") // let it crash
+	}
+
+	return &l.tracks[id]
+}
+
 // String wraps info of a library to a readable string.
 func (l *Library) String() string {
 	str := "name: " + l.name + "\n" + "path: " + l.path + "\n"
@@ -64,8 +72,8 @@ func (l *Library) String() string {
 	return str + "tracks: \n" + strings.Join(tracksStr, "\n")
 }
 
-func (l *Library)NumTracks()int{
-	if l.name==""{
+func (l *Library) NumTracks() int {
+	if l.name == "" {
 		panic("uninitialized library")
 	}
 	return len(l.tracks)
@@ -80,7 +88,7 @@ func walk(path string, tracks *[]Track) {
 	}
 
 	for _, e := range entries {
-		subpath:=filepath.Join(path, e.Name())
+		subpath := filepath.Join(path, e.Name())
 
 		if e.IsDir() {
 			walk(subpath, tracks)
