@@ -2,7 +2,6 @@ package library
 
 import (
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -49,7 +48,6 @@ func (l *Library) Scan() error {
 		return errors.New("library is empty")
 	}
 
-	fmt.Println(l.path, l.tracks)
 	return nil
 }
 

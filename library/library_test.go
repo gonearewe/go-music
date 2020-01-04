@@ -17,9 +17,9 @@ func TestScan(t *testing.T) {
 	}
 	println("current dir: %s", dir)
 	aValidPath := dir + "/../assets"
-	validPaths:=[]string{aValidPath,aValidPath+"/./"}
+	validPaths := []string{aValidPath, aValidPath + "/./"}
 
-	// initialize library with kinds of name 
+	// initialize library with kinds of name
 	for _, name := range names {
 		_, err := library.NewLibrary(name, aValidPath)
 		if err != nil {
@@ -30,16 +30,16 @@ func TestScan(t *testing.T) {
 	// initialize library with invalid path
 	for _, invalidPath := range invalidPaths {
 		lib, err := library.NewLibrary("MyLibrary", invalidPath)
-		if err == nil{ // errors reports expected
+		if err == nil { // errors reports expected
 			err := lib.Scan()
 			if err == nil {
 				t.Errorf("initialize library with invalid path: expected error not found: %s", invalidPath)
-			} 
+			}
 		}
 	}
 
 	// scan library, pass expected
-	for _,validPath:=range validPaths{
+	for _, validPath := range validPaths {
 		lib, err := library.NewLibrary("MyLibrary", validPath)
 		if err != nil {
 			t.Errorf("initialize library with valid params: %s", err.Error())
@@ -49,5 +49,25 @@ func TestScan(t *testing.T) {
 		if err != nil {
 			t.Errorf("scan library: %s", err.Error())
 		}
+	}
+}
+
+func BenchmarkScan(b *testing.B) {
+	// Preparation
+	dir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	dir = dir + "/../assets" // path to your tracks for testing
+
+	lib, err := library.NewLibrary("MyLibrary", dir)
+	if err != nil {
+		b.Errorf("initialize library with valid params: %s", err.Error())
+	}
+
+	// Benckmark
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = lib.Scan()
 	}
 }

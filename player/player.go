@@ -3,21 +3,22 @@ package player
 import (
 	"math/rand"
 	"os/exec"
+	"time"
 
 	"github.com/gonearewe/go-music/library"
 )
 
 const (
-	randomMode playerMode = iota
-	repeatMode
-	sequentialMode
+	RandomMode PlayerMode = iota
+	RepeatMode
+	SequentialMode
 )
 
-type playerMode = int
+type PlayerMode = int
 
 type Player struct {
 	library   *library.Library
-	mode      playerMode
+	mode      PlayerMode
 	status    status
 	handle    *exec.Cmd // handle of the process playing track
 	isPlaying bool
@@ -26,12 +27,27 @@ type Player struct {
 type status struct {
 	prev      *library.Track
 	current   *library.Track
-	currentID int // only useful in sequentialMode
+	currentID int // only useful in SequentialMode
+}
+
+func NewPlayer(lib *library.Library) *Player {
+	var p Player
+	p.library = lib
+	// by default
+	// p.mode= RandomMode
+	// p.isPlaying= false
+	return &p
 }
 
 func (p *Player) Play() {
+	p.checkPreparation()
 	p.updateStatus()
 	p.play()
+}
+
+// SetMode sets up player mode of a player among enumeration.
+func (p *Player) SetMode(mode PlayerMode) {
+	p.mode = mode
 }
 
 // CurrentTrackAddr returns complete address of current track file(not necessarily playing).
@@ -40,13 +56,38 @@ func (p *Player) CurrentTrackAddr() string {
 	return track.FileAddr()
 }
 
+// HandleExited tells if the backend process actually playing tracks has exited.
+func (p *Player) HandleExited() bool {
+	if !(p.handle == nil) && p.handle.ProcessState.String() == "continued" {
+		return false
+	}
+
+	return true
+}
+
+// checkPreparation guarantees the player is well initialized.
+func (p *Player) checkPreparation() {
+	info := "player uninitialized: "
+
+	if p.library == nil {
+		panic(info + "empty library")
+	}
+
+	if p.isPlaying {
+		p.stop()
+	}
+}
+
 // updateStatus determines current track it will play, and updates prev track for history,
 // all according to playermode.
 func (p *Player) updateStatus() {
+	rand.Seed(time.Now().Unix()) // a seed is required for random
+
 	switch p.mode {
-	case randomMode:
+	case RandomMode:
 		nextID := rand.Intn(p.library.NumTracks())
 		nextTrack := p.library.GetTrackByID(nextID)
+
 		if p.library.NumTracks() > 2 && nextTrack == p.status.current {
 			p.updateStatus() // don't want to hear prev song again if possible
 			return
@@ -61,7 +102,7 @@ func (p *Player) updateStatus() {
 		p.status.prev = p.status.current
 		p.status.current = nextTrack
 
-	case repeatMode:
+	case RepeatMode:
 		// determine current track
 		if p.status.current == nil { // when we play it for the first time
 			p.status.current = p.library.GetTrackByID(rand.Intn(p.library.NumTracks()))
@@ -69,7 +110,7 @@ func (p *Player) updateStatus() {
 			p.status.prev = p.status.current // update history
 		}
 
-	case sequentialMode:
+	case SequentialMode:
 		if p.status.current == nil { // when we play it for the first time
 			p.status.currentID = 0
 			p.status.current = p.library.GetTrackByID(0)
@@ -90,12 +131,14 @@ func (p *Player) updateStatus() {
 func (p *Player) play() {
 	cmd := exec.Command("play", p.CurrentTrackAddr())
 	cmd.Start()
+	// cmd.ProcessState
 	p.handle = cmd
-	// cmd.Process.Kill()
+	p.isPlaying = true
 }
 
 // stop kills the process playing track.
 func (p *Player) stop() {
 	p.handle.Process.Kill()
 	p.handle = nil
+	p.isPlaying = false
 }
