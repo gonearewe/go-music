@@ -17,6 +17,7 @@ var ValidTrackFileSuffixes = [2]string{".wav", ".flac"}
 type Track interface {
 	Title() string
 	FileAddr() string
+	// String() string // wraps info of a track to a readable string.
 }
 
 type file struct {

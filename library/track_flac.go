@@ -19,3 +19,11 @@ func (f FLACTrack) Title() string {
 func (f FLACTrack) FileAddr() string {
 	return f.baseFile.addr
 }
+
+// String wraps info of a track to a readable string.
+func (f *FLACTrack) String() string {
+	return f.title + "\n" +
+		f.artist + "\n" +
+		f.album + "   " + f.year + "\n" +
+		f.genre + "\n"
+}

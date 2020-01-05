@@ -30,3 +30,8 @@ func isWAVTrack(fi os.FileInfo) bool {
 
 	return false
 }
+
+// String wraps info of a track to a readable string.
+func (f *WAVTrack) String() string {
+	return f.title + "\n"
+}

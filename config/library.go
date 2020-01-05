@@ -1,5 +1,11 @@
 package config
 
+/*
+Libraries config serves as a cache since scanning loacl tracks each time the software runs
+will certainly cost too much time.
+TODO: Solve problems when hiting invalid cache.
+*/
+
 import "github.com/pelletier/go-toml"
 
 type LibraryConfiguration struct {

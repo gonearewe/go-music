@@ -14,7 +14,7 @@ const (
 	SequentialMode
 )
 
-type PlayerMode = int
+type PlayerMode int
 
 type Player struct {
 	library   *library.Library
@@ -58,11 +58,11 @@ func (p *Player) CurrentTrackAddr() string {
 
 // HandleExited tells if the backend process actually playing tracks has exited.
 func (p *Player) HandleExited() bool {
-	if !(p.handle == nil) && p.handle.ProcessState.String() == "continued" {
-		return false
+	if p.handle == nil  {
+		return true
 	}
 
-	return true
+	return false
 }
 
 // checkPreparation guarantees the player is well initialized.
