@@ -29,10 +29,14 @@ type file struct {
 	Size int64  // how many bytes the file is
 }
 
+func (l *LibraryConfiguration) FileName() string {
+	return "libraries.toml"
+}
+
 func (l *LibraryConfiguration) Marshal() ([]byte, error) {
 	return toml.Marshal(*l)
 }
 
-func (l *LibraryConfiguration) Unmarshal(data []byte)  error {
-	return toml.Unmarshal(data,l)
+func (l *LibraryConfiguration) Unmarshal(data []byte) error {
+	return toml.Unmarshal(data, l)
 }

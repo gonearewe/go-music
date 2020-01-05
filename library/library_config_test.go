@@ -31,7 +31,10 @@ func TestNewLibraryConfiguration(t *testing.T) {
 
 	m, _ := toml.Marshal(libconfig) // marshal
 
-	var newlibconfig *config.LibraryConfiguration
+	// NOTE: following statement initializes newlibconfig as a nil pointer 
+	// rather than a pointer to a empty struct.
+	// var newlibconfig *config.LibraryConfiguration
+	newlibconfig:=&config.LibraryConfiguration{} // the correct statement
 	toml.Unmarshal(m, newlibconfig) // unmarshal back
 
 	fmt.Println(*newlibconfig)
