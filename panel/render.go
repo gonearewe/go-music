@@ -1,4 +1,4 @@
-package player
+package panel
 
 import (
 	"bufio"
@@ -10,11 +10,11 @@ import (
 type ColorTheme [2]Attribute
 
 var (
-	Spring    = [2]Attribute{FgHiGreen, FgGreen}
-	Autumn    = [2]Attribute{FgHiYellow, FgYellow}
-	Winter    = [2]Attribute{FgHiBlue, FgBlue}
-	Rose      = [2]Attribute{FgHiRed, FgHiMagenta}
-	Valentine = [2]Attribute{FgHiMagenta, FgMagenta}
+	Spring    = [2]Attribute{FgHiGreen /*    */, FgGreen}
+	Autumn    = [2]Attribute{FgHiYellow /*  */, FgYellow}
+	Winter    = [2]Attribute{FgHiBlue /*      */, FgBlue}
+	Rose      = [2]Attribute{FgHiRed /*  */, FgHiMagenta}
+	Valentine = [2]Attribute{FgHiMagenta /**/, FgMagenta}
 )
 
 func RenderText(text string, theme ColorTheme) string {
