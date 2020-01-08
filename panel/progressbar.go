@@ -1,9 +1,10 @@
 package panel
 
 import (
-	"fmt"
 	"math/rand"
 	"strings"
+
+	. "github.com/fatih/color"
 )
 
 var (
@@ -17,7 +18,7 @@ type ProgressBar struct {
 	progress        int    // ranging from 0 to len(bar)-1, records current progress
 }
 
-func ShowProgressBar() {
+func ShowProgressBar(theme ColorTheme) {
 	eraseCurrentLine()
 	// at the start
 	if progressBar.progress == 0 && !progressBar.isGettingLonger {
@@ -40,9 +41,9 @@ func ShowProgressBar() {
 	// prints bar to the screen
 	if progressBar.isGettingLonger {
 		progressBar.progress++
-		fmt.Print(progressBar.bar[:progressBar.progress+1])
+		New(theme[0]).Print(progressBar.bar[:progressBar.progress+1])
 	} else {
 		progressBar.progress--
-		fmt.Print(progressBar.bar[:progressBar.progress+1])
+		New(theme[1]).Print(progressBar.bar[:progressBar.progress+1])
 	}
 }

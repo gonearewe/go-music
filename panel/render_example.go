@@ -23,6 +23,6 @@ func ExampleRender() {
 func ExampleShowProgressBar() {
 	for {
 		time.Sleep(10 * time.Millisecond)
-		ShowProgressBar()
+		ShowProgressBar(Spring)
 	}
 }

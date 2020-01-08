@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 // Library of tracks is based on a folder and contains tracks in his directory or subdirectories.
@@ -48,6 +49,33 @@ func (l *Library) Scan() error {
 		return errors.New("library is empty")
 	}
 
+	return nil
+}
+
+func (l *Library) ScanWithRoutines() error {
+	if files, err := ioutil.ReadDir(l.path); err != nil {
+		return err
+	} else {
+		l.tracks = make([]Track, 0, len(files)) // it's better to allocte first
+	}
+
+	wg := new(sync.WaitGroup)
+	track:=make(chan Track)
+	walkWithRoutines(l.path, track, wg)
+
+	// closer
+	go func() {
+		wg.Wait()
+		close(track)
+	}()
+
+	for t := range track {
+		l.tracks = append(l.tracks, t)
+	}
+
+	if len(l.tracks) == 0 {
+		return errors.New("library is empty")
+	}
 	return nil
 }
 
@@ -110,4 +138,28 @@ func dirEntries(path string) ([]os.FileInfo, bool) {
 	}
 
 	return entries, true
+}
+
+func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup) {
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return
+	}
+
+	for _, file := range files {
+		wg.Add(1)
+		go func(file os.FileInfo) {
+			defer wg.Done()
+
+			subpath := filepath.Join(path, file.Name())
+
+			if file.IsDir() {
+				go walkWithRoutines(subpath, track, wg)
+			}
+
+			if t, err := ParseTrack(subpath, file); err == nil {
+				track <- t
+			}
+		}(file)
+	}
 }

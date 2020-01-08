@@ -17,3 +17,20 @@ func ShowLOGO() {
 	eraseScreen()
 	fmt.Println(LOGO)
 }
+
+func ShowCover(trackInfo string,theme ColorTheme, done chan bool ){
+	eraseScreen()
+	fmt.Println(RenderText(trackInfo, theme))	
+
+	for{
+		select{
+		case <-done:
+			eraseScreen()
+			return
+		default:
+			break
+		}
+		
+		ShowProgressBar(theme)
+	}
+}

@@ -42,7 +42,7 @@ func NewPlayer(lib *library.Library) *Player {
 func (p *Player) Play() {
 	p.checkPreparation()
 	p.updateStatus()
-	p.play()
+	go p.play()
 }
 
 // SetMode sets up player mode of a player among enumeration.
@@ -58,7 +58,7 @@ func (p *Player) CurrentTrackAddr() string {
 
 // HandleExited tells if the backend process actually playing tracks has exited.
 func (p *Player) HandleExited() bool {
-	if p.handle == nil  {
+	if p.handle == nil || p.handle.ProcessState != nil {
 		return true
 	}
 
@@ -130,10 +130,10 @@ func (p *Player) updateStatus() {
 // play executes a process non-blockingly and records the process in the field 'handle'.
 func (p *Player) play() {
 	cmd := exec.Command("play", p.CurrentTrackAddr())
-	cmd.Start()
-	// cmd.ProcessState
 	p.handle = cmd
 	p.isPlaying = true
+	cmd.Run()
+	// cmd.ProcessState
 }
 
 // stop kills the process playing track.
