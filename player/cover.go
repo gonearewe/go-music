@@ -4,8 +4,11 @@ import (
 	"github.com/gonearewe/go-music/panel"
 )
 
-func (p *Player) ShowCover(theme panel.ColorTheme, done chan bool) {
-	panel.ShowCover(p.currentTrackInfo(), theme, done)
+// ShowCover prints cover(info and progressbar) to the screen blockingly,
+// thus this method requires started with a goroutine and closing 
+// param done(chan) directs its termination.  
+func (p *Player) ShowCover(done <-chan struct{}) {
+	panel.ShowCover(p.currentTrackInfo(), panel.RandomColorTheme(), done)
 	return
 }
 

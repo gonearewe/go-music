@@ -10,7 +10,7 @@ const (
 	// The cursor will move to the home position, at the upper left of the screen.
 	TCCursorHome = "\033[H"
 	// The cursor will move to the start of current line.
-	TCCursorLineStart = "\033[;0H"
+	TCCursorLineStart = "\033[64D" // actually move cursor 64 counts left(enough to the line start)
 
 	// Erases the screen from the current line down to the bottom of the screen.
 	TCEraseDown = "\033[J"
@@ -22,14 +22,14 @@ const (
 	TCEraseEndofLine = "\033[K"
 )
 
-// eraseScreen clears the screen and sets the cursor at the upper left of the screen.
-func eraseScreen() {
+// EraseScreen clears the screen and sets the cursor at the upper left of the screen.
+func EraseScreen() {
 	fmt.Print(TCCursorHome)
 	fmt.Print(TCEraseDown)
 }
 
-// eraseCurrentLine erases the entire current line and sets the cursor at the start of current line.
-func eraseCurrentLine() {
+// EraseCurrentLine erases the entire current line and sets the cursor at the start of current line.
+func EraseCurrentLine() {
 	fmt.Print(TCEraseLine)
 	fmt.Print(TCCursorLineStart)
 }

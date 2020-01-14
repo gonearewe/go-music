@@ -19,7 +19,7 @@ type ProgressBar struct {
 }
 
 func ShowProgressBar(theme ColorTheme) {
-	eraseCurrentLine()
+	EraseCurrentLine()
 	// at the start
 	if progressBar.progress == 0 && !progressBar.isGettingLonger {
 		len := rand.Intn(20) + 10 // NOTE: 10 <= len <= 30

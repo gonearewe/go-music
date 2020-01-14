@@ -1,6 +1,9 @@
 package panel
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 const (
 	LOGO = `
@@ -14,23 +17,27 @@ const (
 )
 
 func ShowLOGO() {
-	eraseScreen()
+	EraseScreen()
 	fmt.Println(LOGO)
 }
 
-func ShowCover(trackInfo string,theme ColorTheme, done chan bool ){
-	eraseScreen()
-	fmt.Println(RenderText(trackInfo, theme))	
+func ShowCover(trackInfo string, theme ColorTheme, done <-chan struct{}) {
+	const ProgressBarRefreshIntervalMs = 10 // how much time(ms) progressbar is refreshed
 
-	for{
-		select{
+	var text=RenderText(trackInfo, theme)
+	
+	for {
+		select {
 		case <-done:
-			eraseScreen()
+			EraseScreen()
 			return
 		default:
 			break
 		}
-		
+
+		EraseScreen()
+		fmt.Println(text)
 		ShowProgressBar(theme)
+		time.Sleep(ProgressBarRefreshIntervalMs * time.Millisecond)
 	}
 }

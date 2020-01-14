@@ -3,6 +3,7 @@ package player
 import (
 	"math/rand"
 	"os/exec"
+	"sync"
 	"time"
 
 	"github.com/gonearewe/go-music/library"
@@ -21,7 +22,9 @@ type Player struct {
 	mode      PlayerMode
 	status    status
 	handle    *exec.Cmd // handle of the process playing track
+	locker    *sync.Mutex
 	isPlaying bool
+	done      chan struct{} // signal for panel controling
 }
 
 type status struct {
@@ -33,6 +36,7 @@ type status struct {
 func NewPlayer(lib *library.Library) *Player {
 	var p Player
 	p.library = lib
+	p.locker = new(sync.Mutex)
 	// by default
 	// p.mode= RandomMode
 	// p.isPlaying= false
@@ -58,11 +62,22 @@ func (p *Player) CurrentTrackAddr() string {
 
 // HandleExited tells if the backend process actually playing tracks has exited.
 func (p *Player) HandleExited() bool {
+	defer p.Unlock()
+	p.Lock()
+
 	if p.handle == nil || p.handle.ProcessState != nil {
 		return true
 	}
 
 	return false
+}
+
+func (p *Player) Lock() {
+	p.locker.Lock()
+}
+
+func (p *Player) Unlock() {
+	p.locker.Unlock()
 }
 
 // checkPreparation guarantees the player is well initialized.
@@ -127,13 +142,15 @@ func (p *Player) updateStatus() {
 	}
 }
 
-// play executes a process non-blockingly and records the process in the field 'handle'.
+// play executes a process blockingly and records the process in the field 'handle'.
 func (p *Player) play() {
+	p.Lock()
 	cmd := exec.Command("play", p.CurrentTrackAddr())
 	p.handle = cmd
 	p.isPlaying = true
+	p.Unlock()
+
 	cmd.Run()
-	// cmd.ProcessState
 }
 
 // stop kills the process playing track.

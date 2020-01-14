@@ -2,6 +2,7 @@ package panel
 
 import (
 	"bufio"
+	"math/rand"
 	"strings"
 
 	. "github.com/fatih/color"
@@ -23,13 +24,23 @@ func RenderText(text string, theme ColorTheme) string {
 	scanner := bufio.NewScanner(strings.NewReader(text))
 	for scanner.Scan() {
 		if flag {
-			s = append(s, New(theme[1]).Sprint(scanner.Text()))
+			s = append(s, New(theme[1]).Sprintln(scanner.Text()))
 		} else {
-			s = append(s, New(theme[0]).Sprint(scanner.Text()))
+			s = append(s, New(theme[0]).Sprintln(scanner.Text()))
 		}
 
 		flag = !flag
 	}
 
 	return strings.Join(s, "")
+}
+
+// RandomColorTheme returns a random ColorTheme.
+func RandomColorTheme() ColorTheme {
+	var themes = []ColorTheme{
+		Spring, Autumn, Winter,
+		Rose, Valentine,
+	}
+
+	return themes[rand.Intn(len(themes))]
 }

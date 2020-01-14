@@ -1,5 +1,9 @@
 package library
 
+import (
+	"fmt"
+)
+
 type FLACTrack struct {
 	baseFile file
 	title    string // unlike filename, title comes from encoded tag info
@@ -22,8 +26,8 @@ func (f FLACTrack) FileAddr() string {
 
 // String wraps info of a track to a readable string.
 func (f FLACTrack) String() string {
-	return f.title + "\n" +
-		f.artist + "\n" +
-		f.album + "   " + f.year + "\n" +
-		f.genre + "\n"
+	s := fmt.Sprintln(f.title)
+	s = fmt.Sprintln(s + f.artist)
+	s = fmt.Sprintln(s + f.album + "   " + f.year)
+	return fmt.Sprintln(s + f.genre)
 }
