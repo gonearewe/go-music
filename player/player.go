@@ -62,9 +62,6 @@ func (p *Player) CurrentTrackAddr() string {
 
 // HandleExited tells if the backend process actually playing tracks has exited.
 func (p *Player) HandleExited() bool {
-	defer p.Unlock()
-	p.Lock()
-
 	if p.handle == nil || p.handle.ProcessState != nil {
 		return true
 	}
@@ -144,11 +141,9 @@ func (p *Player) updateStatus() {
 
 // play executes a process blockingly and records the process in the field 'handle'.
 func (p *Player) play() {
-	p.Lock()
 	cmd := exec.Command("play", p.CurrentTrackAddr())
 	p.handle = cmd
 	p.isPlaying = true
-	p.Unlock()
 
 	cmd.Run()
 }
