@@ -26,7 +26,7 @@ func init() {
 	c := &config.LibraryConfiguration{}
 	err := config.LoadConfigFromWorkDir(c)
 	if err != nil { // no config file found
-		GlobalPlayer.SetLibrary()
+		// GlobalPlayer.SetLibrary()
 	} else {
 		lib := library.NewLibraryFromConfig(c)
 		GlobalPlayer = player.NewPlayer(lib)
@@ -37,20 +37,12 @@ func init() {
 }
 
 func main() {
-	// TODO: no support for options during to thread safety issues.
-	// go GlobalPlayer.ListenForKeyboard()
-	for {
-		func() {
-			// TODO: Oh, lock doesn't solve problems of thread safety, I don't know why.
-			defer GlobalPlayer.Unlock()
-			GlobalPlayer.Lock()
 
-			if GlobalPlayer.HandleExited() {
-				GlobalPlayer.PlayNextTrack()
-				for GlobalPlayer.HandleExited() {
-				}
-			}
-		}()
+	// var requests=[]player.Request{R}
+	ch := GlobalPlayer.Start()
+	ch <- player.RequestNextTrack
+	for {
+		time.Sleep(5 * time.Second)
 	}
 }
 

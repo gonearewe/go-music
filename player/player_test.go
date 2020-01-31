@@ -1,6 +1,7 @@
 package player_test
 
 import (
+	"time"
 	"github.com/gonearewe/go-music/player"
 	"os"
 	"testing"
@@ -9,7 +10,7 @@ import (
 )
 
 // Unlike ordinary tests where you validate output, you will listen to tracks by yourself now.
-func TestPlay(t *testing.T) {
+func TestStart(t *testing.T) {
 	// Preparation
 	dir, err := os.Getwd()
 	if err != nil {
@@ -29,6 +30,10 @@ func TestPlay(t *testing.T) {
 
 	// Test
 	p:=player.NewPlayer(lib)
-	p.Play()
+
+	// var requests=[]player.Request{R}
+	ch:=p.Start()
+	ch<-player.RequestNextTrack
+	time.Sleep(10*time.Second)
 	// Another process is started on the backend, this process can exit naturally.
 }

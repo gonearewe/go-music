@@ -60,9 +60,11 @@ func (l *Library) ScanWithRoutines() error {
 	}
 
 	var wg = new(sync.WaitGroup)
-	var track=make(chan Track)
-	var tokens=make(chan struct{},20)
-	walkWithRoutines(l.path, track, wg,tokens)
+	var track = make(chan Track)
+	var tokens = make(chan struct{}, 20)
+	wg.Add(1) // wait for mission dispatching
+	walkWithRoutines(l.path, track, wg, tokens)
+	wg.Done()
 
 	// closer
 	go func() {
@@ -141,28 +143,58 @@ func dirEntries(path string) ([]os.FileInfo, bool) {
 	return entries, true
 }
 
-func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup,tokens chan struct{}) {
-	files, err := ioutil.ReadDir(path)
+// func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup,tokens chan struct{}) {
+// 	files, err := ioutil.ReadDir(path)
+// 	if err != nil {
+// 		return
+// 	}
+
+// 	for _, file := range files {
+// 		wg.Add(1)
+// 		go func(file os.FileInfo) {
+// 			defer wg.Done()
+// 			defer func(){<-tokens}()
+// 			tokens<-struct{}{}
+
+// 			subpath := filepath.Join(path, file.Name())
+
+// 			if file.IsDir() {
+// 				go walkWithRoutines(subpath, track, wg,tokens)
+// 			}
+
+// 			if t, err := ParseTrack(subpath, file); err == nil {
+// 				track <- t
+// 			}
+// 		}(file)
+// 	}
+// }
+
+func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup, tokens chan struct{}) {
+	file, err := os.Stat(path)
 	if err != nil {
 		return
 	}
 
-	for _, file := range files {
+	if !file.IsDir() {
 		wg.Add(1)
 		go func(file os.FileInfo) {
 			defer wg.Done()
-			defer func(){<-tokens}()
-			tokens<-struct{}{}
+			defer func() { <-tokens }()
+			tokens <- struct{}{}
 
-			subpath := filepath.Join(path, file.Name())
-
-			if file.IsDir() {
-				go walkWithRoutines(subpath, track, wg,tokens)
-			}
-
-			if t, err := ParseTrack(subpath, file); err == nil {
+			if t, err := ParseTrack(path, file); err == nil {
 				track <- t
 			}
 		}(file)
+	} else {
+		subfiles, err := ioutil.ReadDir(path)
+		if err != nil {
+			return
+		}
+
+		for _,f := range subfiles {
+			subpath := filepath.Join(path, f.Name())
+			walkWithRoutines(subpath, track, wg, tokens)
+		}
 	}
 }

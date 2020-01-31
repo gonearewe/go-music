@@ -123,7 +123,7 @@ func BenchmarkScanWithRoutines(b *testing.B) {
 	}
 	dir = dir + "/../assets" // path to your tracks for testing
 
-	lib, err := library.NewLibrary("MyLibrary", "/media/heathcliff/新加卷/Taylor Swift")
+	lib, err := library.NewLibrary("MyLibrary", "/media/heathcliff/新加卷/LOSSLESS MUSIC")
 	if err != nil {
 		b.Errorf("initialize library with valid params: %s", err.Error())
 	}
