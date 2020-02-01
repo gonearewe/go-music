@@ -143,32 +143,6 @@ func dirEntries(path string) ([]os.FileInfo, bool) {
 	return entries, true
 }
 
-// func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup,tokens chan struct{}) {
-// 	files, err := ioutil.ReadDir(path)
-// 	if err != nil {
-// 		return
-// 	}
-
-// 	for _, file := range files {
-// 		wg.Add(1)
-// 		go func(file os.FileInfo) {
-// 			defer wg.Done()
-// 			defer func(){<-tokens}()
-// 			tokens<-struct{}{}
-
-// 			subpath := filepath.Join(path, file.Name())
-
-// 			if file.IsDir() {
-// 				go walkWithRoutines(subpath, track, wg,tokens)
-// 			}
-
-// 			if t, err := ParseTrack(subpath, file); err == nil {
-// 				track <- t
-// 			}
-// 		}(file)
-// 	}
-// }
-
 func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup, tokens chan struct{}) {
 	file, err := os.Stat(path)
 	if err != nil {
