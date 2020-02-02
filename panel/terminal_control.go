@@ -2,9 +2,9 @@ package panel
 
 import "fmt"
 
-/*
-Down below lie parts of ANSI/VT100 Terminal Control Escape Sequences, TC stands for Terminal Control.
-*/
+
+// Down below lie parts of ANSI/VT100 Terminal Control Escape Sequences, TC stands for Terminal Control.
+
 const (
 	/* Cursor sequences sets the cursor position where subsequent text will begin. */
 	// The cursor will move to the home position, at the upper left of the screen.

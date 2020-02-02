@@ -1,7 +1,5 @@
-/*
-Package config handles configurations for go-music, it saves config files about 
-color themes, libraries caches and so on in software's work dir(in user's home dir).
-*/
+// Package config handles configurations for go-music, it saves config files about 
+// color themes, libraries caches and so on in software's work dir(in user's home dir).
 package config
 
 import (

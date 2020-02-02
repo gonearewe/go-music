@@ -36,6 +36,8 @@ func NewLibrary(name, path string) (*Library, error) {
 
 // Scan scans tracks for a initialized library(with a path referring to a music folder),
 // scanning a empty library will results in a error.
+//
+// DEPRECATED: ScanWithRoutines proves to be faster than this one.
 func (l *Library) Scan() error {
 	if files, err := ioutil.ReadDir(l.path); err != nil {
 		return err
@@ -61,6 +63,8 @@ func (l *Library) ScanWithRoutines() error {
 
 	var wg = new(sync.WaitGroup)
 	var track = make(chan Track)
+	// every routine needs to acquire a token to start to work,
+	// the length of tokens limits that the same number of routine can work.  
 	var tokens = make(chan struct{}, 20)
 	wg.Add(1) // wait for mission dispatching
 	walkWithRoutines(l.path, track, wg, tokens)
@@ -72,6 +76,7 @@ func (l *Library) ScanWithRoutines() error {
 		close(track)
 	}()
 
+	// for range all tracks sent by working routines
 	for t := range track {
 		l.tracks = append(l.tracks, t)
 	}
@@ -108,7 +113,6 @@ func (l *Library) NumTracks() int {
 	return len(l.tracks)
 }
 
-// TODO: improve with goroutine supports.
 // walk searchs a folder and its sub-folder recursively for tracks.
 func walk(path string, tracks *[]Track) {
 	entries, ok := dirEntries(path)
@@ -143,6 +147,9 @@ func dirEntries(path string) ([]os.FileInfo, bool) {
 	return entries, true
 }
 
+// walkWithRoutines trys to traverse a dictionary recursively and 
+// parses every track by starting a routine to handle it, though 
+// number of routines is limited through tokens for scheduling costs time.
 func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup, tokens chan struct{}) {
 	file, err := os.Stat(path)
 	if err != nil {

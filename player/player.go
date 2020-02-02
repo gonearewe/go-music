@@ -45,6 +45,12 @@ func NewPlayer(lib *library.Library, outport chan<- Request) *Player {
 	return &p
 }
 
+// Start starts a player routine receiving requests and playing tracks accordingly.
+//
+// text: if player plays next track, it send the track's cover through
+// this(to panel routine actually).
+// 
+// it returns a channel through which you may send requests to the player routine.
 func (p *Player) Start(text chan<- string) chan<- Request {
 	var requestChan = make(chan Request, 4)
 	// WARNING: miss this statement, you will be blocked forever when filling p.requestChan

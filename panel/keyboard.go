@@ -1,11 +1,23 @@
 package panel
 
 import (
+	"bufio"
 	"fmt"
 	"os"
+	"time"
 
 	. "github.com/gonearewe/go-music/request"
 )
+
+// Here lie user-interaction functions, they occupy the terminal blockingly
+// and expect users' input, they may give out signals according to users' instructions.
+
+// RequestNewLibrary occupys terminal and requests users to type a new
+// library's path and name.
+func RequestNewLibrary() (libraryName, libraryPath string) {
+	// wrap it since it's required when software initializes without library config.
+	return setLibrary()
+}
 
 // listenForKeyboard blockingly listens for instructions given by key pression
 // and changes the state of player accordingly by signaling player.
@@ -31,18 +43,14 @@ func showOptions(outport chan<- Request) {
 	case 1:
 		changeMode(outport)
 	case 2:
-		setLibrary()
-	case 3:
-		return
+		if libraryName, libraryPath := setLibrary(); libraryName != "" {
+			outport <- NewRequestToMain(RequestSetNewLibrary, []string{libraryName, libraryPath})
+		}
 	}
+	return
 }
 
-// SetLibrary is required when software initializes without library config.
-// NOTICE: It may throw exceptions.
-func SetLibrary() {
-	setLibrary()
-}
-
+// getOption works in pair with showOptions.
 func getOption() int {
 	EraseScreen()
 
@@ -88,46 +96,43 @@ func changeMode(outport chan<- Request) {
 	}
 }
 
-func setLibrary() {
+func setLibrary() (libraryName, libraryPath string) {
 	EraseScreen()
-	fmt.Println("TODO")
-	// fmt.Println(`
-	// Set library: Type path:
-	// Please type folder path to your library, type 'q' to quit.
-	// >`)
+	fmt.Print(`
+	Set library: Type path:
+	Please type folder path to your library, type 'q' to quit.
+	>`)
 
-	// var input, libraryPath, libraryName string
-	// fmt.Scanln(&input)
-	// if input == "q" {
-	// 	return
-	// } else {
-	// 	libraryPath = input
-	// }
+	var sc = bufio.NewScanner(os.Stdin)
+	sc.Scan()
+	if sc.Text() == "q" {
+		return "", ""
+	} else {
+		libraryPath = sc.Text()
+	}
 
-	// EraseScreen()
-	// fmt.Println(`
-	// Set library: Type name:
-	// Please type a name for your library, type 'q' to quit.
-	// >`)
+	EraseScreen()
+	// time.Sleep(100*time.Millisecond)
 
-	// fmt.Scanln(&input)
-	// if input == "q" {
-	// 	return
-	// } else {
-	// 	libraryName = input
-	// }
+	fmt.Print(`
+	Set library: Type name:
+	Please type a name for your library, type 'q' to quit.
+	>`)
 
-	// EraseScreen()
-	// fmt.Println("Loading Library... Please wait... ")
+	sc.Scan()
+	if sc.Text() == "q" {
+		return "", ""
+	} else {
+		libraryName = sc.Text()
+	}
 
-	// lib, err := library.NewLibrary(libraryName, libraryPath)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// err = lib.Scan()
-	// if err != nil {
-	// 	panic(err)
-	// }
+	EraseScreen()
+	fmt.Println("Require reboot to start with new library ...")
+	time.Sleep(1 * time.Second)
 
-	// p = NewPlayer(lib)
+	if libraryName != "" && libraryPath != "" {
+		return
+	} else {
+		return "", ""
+	}
 }

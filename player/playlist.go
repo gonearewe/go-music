@@ -1,8 +1,8 @@
 /*
-* playlist acts like a limited-size stack, when you push new one and it's full,
-* the oldest one will be removed, so it can serve as a cache storing recently played 
-* tracks so you can access previous track.
-*/
+ * playlist acts like a limited-size stack, when you push new one and it's full,
+ * the oldest one will be removed, so it can serve as a cache storing recently played 
+ * tracks so you can access previous track.
+ */
 
 package player
 

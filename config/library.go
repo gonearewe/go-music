@@ -3,10 +3,15 @@ package config
 /*
 Libraries config serves as a cache since scanning loacl tracks each time the software runs
 will certainly cost too much time.
-TODO: Solve problems when hiting invalid cache.
+Check will be made when loading library from config during which invalid
+tracks will be removed in order to avoid hiting invalid cache.
+If any invalid cache is found during a check, a re-scaning is required. 
 */
 
-import "github.com/pelletier/go-toml"
+import (
+	"os"
+	"github.com/pelletier/go-toml"
+)
 
 type LibraryConfiguration struct {
 	Libraries []Library
@@ -45,4 +50,20 @@ func (l *LibraryConfiguration) Marshal() ([]byte, error) {
 
 func (l *LibraryConfiguration) Unmarshal(data []byte) error {
 	return toml.Unmarshal(data, l)
+}
+
+// RemoveInvalid removes tracks not actually existing and reports if anything invalid was found.
+func (l *LibraryConfiguration) RemoveInvalid()(foundInvalid bool){
+	for _,lib:=range l.Libraries{
+		tracks:=make([]Track, 0,len(lib.Tracks))
+		for _,t:=range lib.Tracks{
+			if _,err:=os.Stat(t.BaseFile.Addr);err==nil{
+				tracks=append(tracks, t)
+			}else {
+				foundInvalid=true
+			}
+		}
+		lib.Tracks=tracks
+	}
+	return
 }

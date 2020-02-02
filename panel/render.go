@@ -18,6 +18,7 @@ var (
 	Valentine = [2]Attribute{FgHiMagenta /**/, FgMagenta}
 )
 
+// RenderText rendering given text so that it looks colorful on the screen.
 func RenderText(text string, theme ColorTheme) string {
 	var flag bool
 	s := make([]string, 5)

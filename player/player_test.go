@@ -45,6 +45,6 @@ func TestStart(t *testing.T) {
 		ch<-request.NewRequestToPlayer(req)
 		time.Sleep(3*time.Second)
 	}
-	time.Sleep(10*time.Second)
+	// time.Sleep(1000*time.Second)
 	// Another process is started on the backend, this process can exit naturally.
 }

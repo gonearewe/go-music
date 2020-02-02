@@ -4,8 +4,10 @@ go 1.13
 
 require (
 	github.com/bogem/id3v2 v1.1.1 // indirect
+	github.com/fatih/color v1.8.0
 	github.com/jcjordyn130/gotag v0.0.0-20180525005225-55f74634a5b8
 	github.com/mewkiz/flac v1.0.5 // indirect
+	github.com/pelletier/go-toml v1.6.0
 	golang.org/x/text v0.3.2 // indirect
 	gopkg.in/h2non/filetype.v1 v1.0.5 // indirect
 )
