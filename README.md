@@ -27,9 +27,15 @@ Now it's time to install this program. Seclect a dictory to continue.
 >
 > $ cd go-music 
 >
-> $ go install main.go go-music
+> $ go install 
 
 ## How to use 
+
+If your Go environment has nothing wrong, after a sucessful installation, simply type
+
+> $ go-music
+
+And that's all, actually.
 
 Go-Music records a library on its config file in your HOME dictory,
 it starts to play tracks in that library randomly by default on launch.
