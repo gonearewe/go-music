@@ -19,15 +19,15 @@ const (
 type PlayerMode int
 
 type Player struct {
-	library   *library.Library
-	mode      PlayerMode
-	playlist  *playList          // maintains track history,the one on the top is the one currently playing
+	library  *library.Library
+	mode     PlayerMode
+	playlist *playList // maintains track history,the one on the top is the one currently playing
 
-	cancel    context.CancelFunc // uesd to kill existing track-playing process
-	handle    chan struct{}      // handle of the process playing track             
+	cancel context.CancelFunc // uesd to kill existing track-playing process
+	handle chan struct{}      // handle of the process playing track
 
 	// two channels for communication, in and out
-	requestChan chan Request   // signal for panel controling
+	requestChan chan Request   // signal for panel controlling
 	outport     chan<- Request // where you send your request to others
 
 	trackCover chan<- string // channel to send cover to panel routine
@@ -49,7 +49,7 @@ func NewPlayer(lib *library.Library, outport chan<- Request) *Player {
 //
 // text: if player plays next track, it send the track's cover through
 // this(to panel routine actually).
-// 
+//
 // it returns a channel through which you may send requests to the player routine.
 func (p *Player) Start(text chan<- string) chan<- Request {
 	var requestChan = make(chan Request, 4)

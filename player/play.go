@@ -30,14 +30,14 @@ func (p *Player) play(done <-chan struct{}, trackAddr <-chan string) {
 
 			go func() {
 				cmd.Run()
-				if cmd.ProcessState.Success(){
+				if cmd.ProcessState.Success() {
 					p.requestChan <- request.NewRequestToPlayer(request.RequestNextTrack)
 				}
 			}()
 
-		// a normal exit results in next track
-		// case <-successfullyexited:
-		// 	p.requestChan <- request.NewRequestToPlayer(request.RequestNextTrack)
+			// a normal exit results in next track
+			// case <-successfullyexited:
+			// 	p.requestChan <- request.NewRequestToPlayer(request.RequestNextTrack)
 		}
 	}
 }

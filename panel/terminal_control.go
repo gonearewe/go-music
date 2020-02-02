@@ -2,7 +2,6 @@ package panel
 
 import "fmt"
 
-
 // Down below lie parts of ANSI/VT100 Terminal Control Escape Sequences, TC stands for Terminal Control.
 
 const (

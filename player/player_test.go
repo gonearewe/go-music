@@ -1,11 +1,11 @@
 package player_test
 
 import (
-	"github.com/gonearewe/go-music/request"
-	"time"
 	"github.com/gonearewe/go-music/player"
+	"github.com/gonearewe/go-music/request"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/gonearewe/go-music/library"
 )
@@ -30,9 +30,9 @@ func TestStart(t *testing.T) {
 	}
 
 	// Test
-	p:=player.NewPlayer(lib,make(chan request.Request, 1000))
+	p := player.NewPlayer(lib, make(chan request.Request, 1000))
 
-	var requests=[]request.RequestType{
+	var requests = []request.RequestType{
 		request.RequestNextTrack,
 		request.RequestNextTrack,
 		request.RequestNextTrack,
@@ -40,10 +40,10 @@ func TestStart(t *testing.T) {
 		request.RequestPrevTrack,
 		request.RequestRepeatMode,
 	}
-	ch:=p.Start(make(chan string, 1000))
-	for _,req:=range requests{
-		ch<-request.NewRequestToPlayer(req)
-		time.Sleep(3*time.Second)
+	ch := p.Start(make(chan string, 1000))
+	for _, req := range requests {
+		ch <- request.NewRequestToPlayer(req)
+		time.Sleep(3 * time.Second)
 	}
 	// time.Sleep(1000*time.Second)
 	// Another process is started on the backend, this process can exit naturally.

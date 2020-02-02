@@ -26,16 +26,16 @@ func showLOGO() {
 
 // Start starts a goroutine to listen to requests and prints track cover
 // to the screen, it only and is the only one that controls screen(terminal).
-// 
+//
 // done: anything sent in results in this goroutine's exit.
-// 
-// output: where goroutine sending out its requests for other routines, 
+//
+// output: where goroutine sending out its requests for other routines,
 // requires outside routines to listen to and dispatch requests.
 //
 // requests: where routine receives outside requests so that it can handle them.
 //
-// trackInfos: routine starts to rander and print string receiving here 
-// repeatedly until next string or a stop request arrives. 
+// trackInfos: routine starts to rander and print string receiving here
+// repeatedly until next string or a stop request arrives.
 func Start(done <-chan struct{}, outport chan<- Request) (requests chan<- Request,
 	trackInfos chan<- string) {
 
@@ -57,7 +57,7 @@ func panelLoop(done <-chan struct{}, requests <-chan Request,
 
 	// so that we read stdin non-blockingly
 	var buf = make([]byte, 1)
-	go func(){os.Stdin.Read(buf)}()
+	go func() { os.Stdin.Read(buf) }()
 
 	for {
 		select {
@@ -84,14 +84,14 @@ func panelLoop(done <-chan struct{}, requests <-chan Request,
 		}
 
 		// if user presses a key
-		if buf[0]!=0 {
+		if buf[0] != 0 {
 			var input = string(buf)
-			buf[0]=0
+			buf[0] = 0
 			listenForKeyboard(input, outport)
 
 			// supply routine for reading input next time,
 			// since it exits nartually every time finishing reading
-			go func(){os.Stdin.Read(buf)}()
+			go func() { os.Stdin.Read(buf) }()
 		}
 
 		// there are things requiring printing to screen

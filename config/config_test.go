@@ -49,16 +49,15 @@ func TestSaveConfigInWorkDir(t *testing.T) {
 
 // BenchmarkLoadConfigFromWorkDir includes two benchmarks, one of which also includes the time cost
 // of SaveConfigInWorkDir(), comment one and uncomment the other one to choose which one to run benchmark.
+//
+// Also, it requires a folder containing large numbers of tracks,
+// I use a folder on my computer and you may select one on yours.
+//
 // NOTICE: library.NewLibraryConfiguration() and config.SaveConfigInWorkDir() are required during preparation,
 // make sure they have already passed the test.
 func BenchmarkLoadConfigFromWorkDir(b *testing.B) {
 	// Preparation
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	dir = dir + "/../assets" // path to your tracks for testing
-	dir = "/media/heathcliff/新加卷/Taylor Swift"
+const dir = "/media/heathcliff/新加卷/LOSSLESS MUSIC" // path to your tracks for testing
 
 	lib, err := library.NewLibrary("MyLibrary", dir)
 	err = lib.Scan()
@@ -89,6 +88,6 @@ func BenchmarkLoadConfigFromWorkDir(b *testing.B) {
 	// b.ResetTimer()
 	// I ignore possible returned error here
 	// for i := 0; i < b.N; i++ {
-		// config.LoadConfigFromWorkDir(libconfig)
+	// config.LoadConfigFromWorkDir(libconfig)
 	// }
 }

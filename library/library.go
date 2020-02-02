@@ -64,7 +64,7 @@ func (l *Library) ScanWithRoutines() error {
 	var wg = new(sync.WaitGroup)
 	var track = make(chan Track)
 	// every routine needs to acquire a token to start to work,
-	// the length of tokens limits that the same number of routine can work.  
+	// the length of tokens limits that the same number of routine can work.
 	var tokens = make(chan struct{}, 20)
 	wg.Add(1) // wait for mission dispatching
 	walkWithRoutines(l.path, track, wg, tokens)
@@ -113,7 +113,7 @@ func (l *Library) NumTracks() int {
 	return len(l.tracks)
 }
 
-// walk searchs a folder and its sub-folder recursively for tracks.
+// walk searches a folder and its sub-folder recursively for tracks.
 func walk(path string, tracks *[]Track) {
 	entries, ok := dirEntries(path)
 	if !ok {
@@ -147,8 +147,8 @@ func dirEntries(path string) ([]os.FileInfo, bool) {
 	return entries, true
 }
 
-// walkWithRoutines trys to traverse a dictionary recursively and 
-// parses every track by starting a routine to handle it, though 
+// walkWithRoutines trys to traverse a dictionary recursively and
+// parses every track by starting a routine to handle it, though
 // number of routines is limited through tokens for scheduling costs time.
 func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup, tokens chan struct{}) {
 	file, err := os.Stat(path)
@@ -173,7 +173,7 @@ func walkWithRoutines(path string, track chan<- Track, wg *sync.WaitGroup, token
 			return
 		}
 
-		for _,f := range subfiles {
+		for _, f := range subfiles {
 			subpath := filepath.Join(path, f.Name())
 			walkWithRoutines(subpath, track, wg, tokens)
 		}

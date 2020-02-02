@@ -1,4 +1,4 @@
-// Package config handles configurations for go-music, it saves config files about 
+// Package config handles configurations for go-music, it saves config files about
 // color themes, libraries caches and so on in software's work dir(in user's home dir).
 package config
 
@@ -50,7 +50,7 @@ func SaveConfigInWorkDir(c Configuration) error {
 		return errors.New("save config file in work dir: " + err.Error())
 	}
 	path = filepath.Join(path, WorkDirName)
-	os.Mkdir(path, os.ModePerm) // TODO: The os.ModePerm may give unnessary x permission.
+	os.Mkdir(path, os.ModePerm)              // TODO: The os.ModePerm may give unnessary x permission.
 	path = filepath.Join(path, c.FileName()) // path including filename
 
 	if data, err := c.Marshal(); err != nil {

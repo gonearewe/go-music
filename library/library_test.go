@@ -94,15 +94,13 @@ func TestScanWithRoutines(t *testing.T) {
 	}
 }
 
+// BenchmarkScan requires a folder containing large numbers of tracks,
+// I use a folder on my computer and you may select one on yours.
 func BenchmarkScan(b *testing.B) {
 	// Preparation
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	dir = dir + "/../assets" // path to your tracks for testing
+	const dir = "/media/heathcliff/新加卷/LOSSLESS MUSIC" // path to your tracks for testing
 
-	lib, err := library.NewLibrary("MyLibrary", "/media/heathcliff/新加卷/LOSSLESS MUSIC")
+	lib, err := library.NewLibrary("MyLibrary", dir)
 	if err != nil {
 		b.Errorf("initialize library with valid params: %s", err.Error())
 	}
@@ -114,16 +112,15 @@ func BenchmarkScan(b *testing.B) {
 	}
 }
 
-// BenchmarkScanWithRoutines is about 50% faster than BenchmarkScan
+// BenchmarkScanWithRoutines is about 50% faster than BenchmarkScan.
+//
+// Also, it requires a folder containing large numbers of tracks,
+// I use a folder on my computer and you may select one on yours.
 func BenchmarkScanWithRoutines(b *testing.B) {
 	// Preparation
-	dir, err := os.Getwd()
-	if err != nil {
-		panic(err)
-	}
-	dir = dir + "/../assets" // path to your tracks for testing
+	const dir = "/media/heathcliff/新加卷/LOSSLESS MUSIC" // path to your tracks for testing
 
-	lib, err := library.NewLibrary("MyLibrary", "/media/heathcliff/新加卷/LOSSLESS MUSIC")
+	lib, err := library.NewLibrary("MyLibrary", dir)
 	if err != nil {
 		b.Errorf("initialize library with valid params: %s", err.Error())
 	}
